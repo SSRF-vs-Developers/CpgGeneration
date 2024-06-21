@@ -3,6 +3,8 @@ FROM ubuntu:latest as patchedphp
 ENV SCALA_VERSION="2.13.6"
 ENV SBT_VERSION="1.7.0"
 
+## remove the --depth 1 in the clones if the references break.
+
 RUN apt-get update && apt-get -y install gnupg ubuntu-keyring && apt-key update && apt-get update && apt-get install -y  \
     locales  \
     pkg-config build-essential autoconf bison re2c libxml2-dev libsqlite3-dev \
