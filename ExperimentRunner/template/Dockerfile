@@ -1,0 +1,24 @@
+FROM multilayer-cpg-php:latest as scala-master
+
+ENV SCAMA_REPOSITORY_URL "git@github.com:PHP-CPG/scala-master.git"
+ENV SCAMA_CONFIG "main.conf"
+ENV TELEGRAM_CONFIG "telegram.conf*"
+
+WORKDIR /
+RUN mkdir /in/
+RUN mkdir -p /out/
+RUN mkdir /out/scama/
+RUN mkdir /out/cpg/
+
+RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan git.ias.cs.tu-bs.de >> ~/.ssh/known_hosts
+
+WORKDIR /
+RUN --mount=type=ssh git clone ${SCAMA_REPOSITORY_URL}
+WORKDIR /scala-master/
+RUN git checkout 7e79f2305d99b1a221bb3adfc5f186f83df5768c
+RUN sbt stage
+COPY ${SCAMA_CONFIG} "main.conf"
+COPY "dummy.file" ${TELEGRAM_CONFIG}
+COPY "cpg.conf" "/php-cpg/main.conf"
+WORKDIR /
+ENTRYPOINT ["/scala-master/run.sh","/scala-master/main.conf"]
